@@ -14,3 +14,5 @@ jobs:
     steps:
       - name: Acr bot
         uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
