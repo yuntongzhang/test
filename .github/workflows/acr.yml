@@ -15,7 +15,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@v4
       - run: |
-           echo "env.GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}"
+           # echo "env.GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}"
            # echo "pure enclosed: ${{ GITHUB_WORKSPACE }}"
            echo $GITHUB_WORKSPACE
         
