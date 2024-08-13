@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+      - id: set-var 
+        run: echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_OUTPUT
       # - run: |
       #      echo "env.GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}"
       #      echo $GITHUB_WORKSPACE
@@ -21,6 +23,6 @@ jobs:
       - name: Acr bot
         uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
         env:
-          TARGET_REPO_PATH: ${GITHUB_WORKSPACE}
+          TARGET_REPO_PATH: ${{ steps.set-var.outputs.GITHUB_WORKSPACE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
