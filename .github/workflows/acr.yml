@@ -12,8 +12,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out
-        uses: action/checkout@v4
+      # - name: Check out
+      #   uses: action/checkout@v4
         
       - name: Acr bot
         uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
