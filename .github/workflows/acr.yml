@@ -1,0 +1,16 @@
+name: acr test
+
+permissions:
+  contents: read
+  issues: write
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acr bot
+        uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
