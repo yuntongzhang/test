@@ -18,5 +18,6 @@ jobs:
       - name: Acr bot
         uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
         env:
+          TARGET_REPO_PATH: ${{ GITHUB_WORKSPACE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
