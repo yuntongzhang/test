@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
       - run: |
            echo "env.GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}"
-           echo "pure enclosed: ${{ GITHUB_WORKSPACE }}"
+           # echo "pure enclosed: ${{ GITHUB_WORKSPACE }}"
            echo $GITHUB_WORKSPACE
         
       # - name: Acr bot
