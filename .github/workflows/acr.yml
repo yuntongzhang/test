@@ -14,13 +14,13 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
-      - run: |
-           echo ${{ env.GITHUB_WORKSPACE }}
-           echo $GITHUB_WORKSPACE
+      # - run: |
+      #      echo ${{ env.GITHUB_WORKSPACE }}
+      #      echo $GITHUB_WORKSPACE
         
-      # - name: Acr bot
-      #   uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
-      #   env:
-      #     TARGET_REPO_PATH: ${{ env.GITHUB_WORKSPACE }}
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      - name: Acr bot
+        uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
+        env:
+          TARGET_REPO_PATH: $GITHUB_WORKSPACE
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
