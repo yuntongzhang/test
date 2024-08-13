@@ -12,7 +12,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out
+        uses: action/checkout@v4
+        
       - name: Acr bot
         uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
