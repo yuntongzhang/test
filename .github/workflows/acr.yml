@@ -1,4 +1,4 @@
-name: acr test
+name: "AutoCodeRover Bot"
 
 permissions:
   contents: read
@@ -7,20 +7,21 @@ permissions:
 on:
   issue_comment:
     types: [created]
+  issues:
+    types: [opened]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: contains(github.event.comment.body || github.event.issue.body, '@acr') || contains(github.event.comment.body || github.event.issue.body, '@rover-bot')
     steps:
       - name: Check out
         uses: actions/checkout@v4
-      - id: set-var 
+
+      - id: set-var
         run: echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE" >> $GITHUB_OUTPUT
-      # - run: |
-      #      echo "env.GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}"
-      #      echo $GITHUB_WORKSPACE
-        
-      - name: Acr bot
+
+      - name: ACR bot
         uses: AutoCodeRoverSG/code-rover-bot@v0.0.2
         env:
           TARGET_REPO_PATH: ${{ steps.set-var.outputs.GITHUB_WORKSPACE }}
