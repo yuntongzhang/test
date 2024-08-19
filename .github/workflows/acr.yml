@@ -13,7 +13,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: contains(github.event.comment.body || github.event.issue.body, '@acr-bot')
+    # if: contains(github.event.comment.body || github.event.issue.body, '@acr-bot')
     steps:
       - name: Check out
         uses: actions/checkout@v4
