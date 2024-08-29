@@ -1,0 +1,80 @@
+diff --git a/discord/player.py b/discord/player.py
+index 5b2c99d..9b90342 100644
+--- a/discord/player.py
++++ b/discord/player.py
+@@ -730,39 +730,44 @@ class AudioPlayer(threading.Thread):
+         self._speak(SpeakingState.voice)
+ 
+         while not self._end.is_set():
+-            # are we paused?
+-            if not self._resumed.is_set():
+-                self.send_silence()
+-                # wait until we aren't
+-                self._resumed.wait()
+-                continue
+-
+-            data = self.source.read()
+-
+-            if not data:
++            try:
++                # are we paused?
++                if not self._resumed.is_set():
++                    self.send_silence()
++                    # wait until we aren't
++                    self._resumed.wait()
++                    continue
++
++                data = self.source.read()
++
++                if not data:
++                    self.stop()
++                    break
++
++                # are we disconnected from voice?
++                if not client.is_connected():
++                    _log.debug('Not connected, waiting for %ss...', client.timeout)
++                    # wait until we are connected, but not forever
++                    connected = client.wait_until_connected(client.timeout)
++                    if self._end.is_set() or not connected:
++                        _log.debug('Aborting playback')
++                        return
++                    _log.debug('Reconnected, resuming playback')
++                    self._speak(SpeakingState.voice)
++                    # reset our internal data
++                    self.loops = 0
++                    self._start = time.perf_counter()
++
++                play_audio(data, encode=not self.source.is_opus())
++                self.loops += 1
++                next_time = self._start + self.DELAY * self.loops
++                delay = max(0, self.DELAY + (next_time - time.perf_counter()))
++                time.sleep(delay)
++            except Exception as e:
++                self._current_error = e
+                 self.stop()
+                 break
+ 
+-            # are we disconnected from voice?
+-            if not client.is_connected():
+-                _log.debug('Not connected, waiting for %ss...', client.timeout)
+-                # wait until we are connected, but not forever
+-                connected = client.wait_until_connected(client.timeout)
+-                if self._end.is_set() or not connected:
+-                    _log.debug('Aborting playback')
+-                    return
+-                _log.debug('Reconnected, resuming playback')
+-                self._speak(SpeakingState.voice)
+-                # reset our internal data
+-                self.loops = 0
+-                self._start = time.perf_counter()
+-
+-            play_audio(data, encode=not self.source.is_opus())
+-            self.loops += 1
+-            next_time = self._start + self.DELAY * self.loops
+-            delay = max(0, self.DELAY + (next_time - time.perf_counter()))
+-            time.sleep(delay)
+-
+         if client.is_connected():
+             self.send_silence()
+ 
+
