@@ -205,9 +205,13 @@ class FFmpegAudio(AudioSource):
             process = subprocess.Popen(args, creationflags=CREATE_NO_WINDOW, **subprocess_kwargs)
         except FileNotFoundError:
             executable = args.partition(' ')[0] if isinstance(args, str) else args[0]
-            raise ClientException(executable + ' was not found.') from None
+            error = ClientException(executable + ' was not found.')
+            self._current_error = error
+            raise error from None
         except subprocess.SubprocessError as exc:
-            raise ClientException(f'Popen failed: {exc.__class__.__name__}: {exc}') from exc
+            error = ClientException(f'Popen failed: {exc.__class__.__name__}: {exc}')
+            self._current_error = error
+            raise error from exc
         else:
             return process
 
@@ -227,7 +231,10 @@ class FFmpegAudio(AudioSource):
         if proc.poll() is None:
             _log.info('ffmpeg process %s has not terminated. Waiting to terminate...', proc.pid)
             proc.communicate()
-            _log.info('ffmpeg process %s should have terminated with a return code of %s.', proc.pid, proc.returncode)
+
+        if proc.returncode != 0:
+            _log.warning('ffmpeg process %s terminated with non-zero return code of %s.', proc.pid, proc.returncode)
+            self._current_error = Exception(f"FFmpeg exited with non-zero status {proc.returncode}")
         else:
             _log.info('ffmpeg process %s successfully terminated with return code of %s.', proc.pid, proc.returncode)
 
@@ -787,6 +794,9 @@ class AudioPlayer(threading.Thread):
                 _log.exception('Calling the after function failed.', exc_info=exc)
         elif error:
             _log.exception('Exception in voice thread %s', self.name, exc_info=error)
+
+        # Reset the error after calling the after function
+        self._current_error = None
 
     def stop(self) -> None:
         self._end.set()
