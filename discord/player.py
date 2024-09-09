@@ -231,6 +231,8 @@ class FFmpegAudio(AudioSource):
         else:
             _log.info('ffmpeg process %s successfully terminated with return code of %s.', proc.pid, proc.returncode)
 
+        self._ffmpeg_return_code = proc.returncode
+
     def _pipe_writer(self, source: io.BufferedIOBase) -> None:
         while self._process:
             data = source.read(self.BLOCKSIZE)
@@ -737,7 +739,12 @@ class AudioPlayer(threading.Thread):
                 self._resumed.wait()
                 continue
 
-            data = self.source.read()
+            try:
+                data = self.source.read()
+            except Exception as e:
+                if isinstance(self.source, FFmpegAudio):
+                    raise ClientException(f"FFmpeg error: {str(e)}") from e
+                raise
 
             if not data:
                 self.stop()
@@ -769,6 +776,9 @@ class AudioPlayer(threading.Thread):
     def run(self) -> None:
         try:
             self._do_run()
+        except ClientException as exc:
+            self._current_error = exc
+            self.stop()
         except Exception as exc:
             self._current_error = exc
             self.stop()
