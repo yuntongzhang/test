@@ -493,7 +493,14 @@ class VoiceClient(VoiceProtocol):
                 signal_type=signal_type,
             )
 
-        self._player = AudioPlayer(source, self, after=after)
+        def _after_callback(error):
+            if after:
+                if error:
+                    after(error)
+                else:
+                    after(None)
+
+        self._player = AudioPlayer(source, self, after=_after_callback)
         self._player.start()
 
     def is_playing(self) -> bool:
